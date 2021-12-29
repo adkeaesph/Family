@@ -1,8 +1,8 @@
 package com.geektrust.family.services;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 import java.util.Map;
 
 import com.geektrust.family.customexceptions.IdentityException;
@@ -18,10 +18,9 @@ class NuclearRelationshipService {
 	}
 
 	String getFatherOf(String name) throws IdentityException {
-		if (!royalFamily.hasMemberWithName(name))
-			throw new IdentityException("PERSON_NOT_FOUND");
-
 		String mother = getMotherOf(name);
+		if(mother == null)
+			return null;
 		return getSpouseOf(mother);
 	}
 
@@ -33,22 +32,27 @@ class NuclearRelationshipService {
 		return biodata.getMothersName();
 	}
 
-	List<String> getSiblingsOf(String name) throws IdentityException {
+	Set<String> getSiblingsOf(String name) throws IdentityException {
 		if (!royalFamily.hasMemberWithName(name))
 			throw new IdentityException("PERSON_NOT_FOUND");
 
+		Set<String> siblings;
 		String mother = getMotherOf(name);
-		List<String> siblings = getChildrenOf(mother);
-		siblings.remove(name);
+		if(mother != null) {
+			siblings = getChildrenOf(mother);
+			siblings.remove(name);
+		} else {
+			siblings = new LinkedHashSet<>();
+		}
 		return siblings;
 	}
 
-	List<String> getBrothersOf(String name) throws IdentityException {
+	Set<String> getBrothersOf(String name) throws IdentityException {
 		if (!royalFamily.hasMemberWithName(name))
 			throw new IdentityException("PERSON_NOT_FOUND");
 
-		List<String> siblings = getSiblingsOf(name);
-		List<String> brothers = new ArrayList<>();
+		Set<String> siblings = getSiblingsOf(name);
+		Set<String> brothers = new LinkedHashSet<>();
 		for (String sibling : siblings) {
 			if (hasMaleMember(sibling))
 				brothers.add(sibling);
@@ -56,12 +60,12 @@ class NuclearRelationshipService {
 		return brothers;
 	}
 
-	List<String> getSistersOf(String name) throws IdentityException {
+	Set<String> getSistersOf(String name) throws IdentityException {
 		if (!royalFamily.hasMemberWithName(name))
 			throw new IdentityException("PERSON_NOT_FOUND");
 
-		List<String> siblings = getSiblingsOf(name);
-		List<String> sisters = new ArrayList<>();
+		Set<String> siblings = getSiblingsOf(name);
+		Set<String> sisters = new LinkedHashSet<>();
 		for (String sibling : siblings) {
 			if (hasFemaleMember(sibling))
 				sisters.add(sibling);
@@ -69,11 +73,11 @@ class NuclearRelationshipService {
 		return sisters;
 	}
 
-	List<String> getChildrenOf(String name) throws IdentityException {
+	Set<String> getChildrenOf(String name) throws IdentityException {
 		if (royalFamily.hasMaleMember(name))
 			name = getSpouseOf(name);
 
-		List<String> children = new ArrayList<>();
+		Set<String> children = new LinkedHashSet<>();
 		Iterator<Map.Entry<String, Biodata>> it = royalFamily.getIterator();
 		while (it.hasNext()) {
 			Map.Entry<String, Biodata> currentMember = it.next();

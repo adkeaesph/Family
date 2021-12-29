@@ -1,7 +1,7 @@
 package com.geektrust.family.services;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import com.geektrust.family.dtos.NameRelationshipPair;
 import com.geektrust.family.dtos.NewChildDto;
@@ -41,8 +41,7 @@ class OperationsService {
 			ceremonialService.conductMarriage(spouse1, spouse2);
 			return "MARRIAGE_SUCCEEDED";
 		} catch (Exception exception) {
-			System.out.println(exception.getMessage());
-			return "MARRIAGE_FAILED";
+			return exception.getMessage();
 		}
 	}
 
@@ -57,61 +56,51 @@ class OperationsService {
 	private String getRelatives(NameRelationshipPair nameRelationshipPair) {
 		String name = nameRelationshipPair.getName();
 		String relationship = nameRelationshipPair.getRelationship();
-		List<String> members = new ArrayList<>();
-		if (relationship.equals("Paternal-Uncle")) {
-			try {
+		Set<String> members = new LinkedHashSet<>();
+
+		try {
+			switch (relationship) {
+			case "Paternal-Uncle":
 				members = relationshipService.getPaternalUnclesOf(name);
-			} catch (Exception exception) {
-				return exception.getMessage();
-			}
-		} else if (relationship.equals("Paternal-Aunt")) {
-			try {
+				break;
+
+			case "Paternal-Aunt":
 				members = relationshipService.getPaternalAuntsOf(name);
-			} catch (Exception exception) {
-				return exception.getMessage();
-			}
-		} else if (relationship.equals("Maternal-Uncle")) {
-			try {
+				break;
+
+			case "Maternal-Uncle":
 				members = relationshipService.getMaternalUnclesOf(name);
-			} catch (Exception exception) {
-				return exception.getMessage();
-			}
-		} else if (relationship.equals("Maternal-Aunt")) {
-			try {
+				break;
+
+			case "Maternal-Aunt":
 				members = relationshipService.getMaternalAuntsOf(name);
-			} catch (Exception exception) {
-				return exception.getMessage();
-			}
-		} else if (relationship.equals("Sister-In-Law")) {
-			try {
+				break;
+
+			case "Sister-In-Law":
 				members = relationshipService.getSistersInLawOf(name);
-			} catch (Exception exception) {
-				return exception.getMessage();
-			}
-		} else if (relationship.equals("Brother-In-Law")) {
-			try {
+				break;
+
+			case "Brother-In-Law":
 				members = relationshipService.getBrothersInLawOf(name);
-			} catch (Exception exception) {
-				return exception.getMessage();
-			}
-		} else if (relationship.equals("Son")) {
-			try {
+				break;
+
+			case "Son":
 				members = relationshipService.getSonsOf(name);
-			} catch (Exception exception) {
-				return exception.getMessage();
-			}
-		} else if (relationship.equals("Daughter")) {
-			try {
+				break;
+
+			case "Daughter":
 				members = relationshipService.getDaughtersOf(name);
-			} catch (Exception exception) {
-				return exception.getMessage();
-			}
-		} else if (relationship.equals("Siblings")) {
-			try {
+				break;
+
+			case "Siblings":
 				members = relationshipService.getSiblingsOf(name);
-			} catch (Exception exception) {
-				return exception.getMessage();
+				break;
+
+			default:
+				throw new Exception("No functionality implemented yet for given relationship!!!");
 			}
+		} catch (Exception exception) {
+			return exception.getMessage();
 		}
 
 		if (members == null || members.isEmpty())
@@ -120,6 +109,7 @@ class OperationsService {
 		String result = "";
 		for (String member : members)
 			result += member + " ";
+		result = UtilService.removeLeadingAndTrailingSpacesFromString(result);
 		return result;
 	}
 

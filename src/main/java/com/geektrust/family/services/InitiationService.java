@@ -2,6 +2,7 @@ package com.geektrust.family.services;
 
 import com.geektrust.family.customexceptions.GenderException;
 import com.geektrust.family.customexceptions.IdentityException;
+import com.geektrust.family.customexceptions.MarriageException;
 import com.geektrust.family.dtos.NewChildDto;
 import com.geektrust.family.dtos.NewMemberDto;
 import com.geektrust.family.dtos.RoyalPair;
@@ -19,14 +20,14 @@ public class InitiationService {
 		this.queensName = royalPair.getQueensName();
 	}
 	
-	public RoyalFamily initiateFamilyTree() throws IdentityException, GenderException {
+	public RoyalFamily initiateFamilyTree() throws IdentityException, GenderException, MarriageException {
 		createSecondGeneration();
 		createThirdGeneration();
 		createFourthGeneration();
 		return ceremonialService.getRoyalFamily();
 	}
 
-	private void createSecondGeneration() throws IdentityException, GenderException {
+	private void createSecondGeneration() throws IdentityException, GenderException, MarriageException {
 		// Chit, Ish, Vich, Aras, Satya
 		ceremonialService.addMember(new NewChildDto(queensName, "Chit", Gender.MALE));
 		ceremonialService.addMember(new NewChildDto(queensName, "Ish", Gender.MALE));
@@ -47,7 +48,7 @@ public class InitiationService {
 		
 	}
 
-	private void createThirdGeneration() throws IdentityException, GenderException {
+	private void createThirdGeneration() throws IdentityException, GenderException, MarriageException {
 		// Dritha, Tritha, Vritha
 		ceremonialService.addMember(new NewChildDto("Amba", "Dritha", Gender.FEMALE));
 		ceremonialService.addMember(new NewChildDto("Amba", "Tritha", Gender.FEMALE));

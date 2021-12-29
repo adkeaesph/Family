@@ -63,8 +63,20 @@ public class RoyalFamily {
 		return familyMembers.entrySet().iterator();
 	}
 	
-	public Gender getGenderOf(String name) {
-		return familyMembers.get(name).getGender();
+	public boolean isMemberMarried(String name) throws IdentityException {
+		if (!hasMemberWithName(name))
+			throw new IdentityException("PERSON_NOT_FOUND");
+		
+		if(getBiodataOf(name).getSpousesName() == null || getBiodataOf(name).getSpousesName().isEmpty())
+			return false;
+		return true;
+	}
+	
+	public Gender getGenderOf(String name) throws IdentityException {
+		if (!hasMemberWithName(name))
+			throw new IdentityException("PERSON_NOT_FOUND");
+		
+		return getBiodataOf(name).getGender();
 	}
 	
 	

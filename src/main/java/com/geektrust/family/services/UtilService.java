@@ -9,10 +9,7 @@ import java.util.List;
 
 class UtilService {
 
-	UtilService() {
-	}
-	
-	List<String> getListOfCommands(String filepath) throws IOException {
+	static List<String> getListOfCommands(String filepath) throws IOException {
 		File file = new File(filepath);
 		BufferedReader br = new BufferedReader(new FileReader(file));
 
@@ -23,6 +20,14 @@ class UtilService {
 		}
 		br.close();
 		return commands;
+	}
+	
+	static String[] getIndividualWordsFromSentence(String sentence) {
+		return sentence.split("\\s+");
+	}
+	
+	static String removeLeadingAndTrailingSpacesFromString(String string) {
+		return string.trim();
 	}
 
 }

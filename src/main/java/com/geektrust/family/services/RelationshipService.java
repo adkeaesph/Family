@@ -1,7 +1,8 @@
 package com.geektrust.family.services;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import com.geektrust.family.customexceptions.IdentityException;
 import com.geektrust.family.models.RoyalFamily;
@@ -14,61 +15,77 @@ class RelationshipService {
 		nuclearRelationshipService = new NuclearRelationshipService(royalFamily);
 	}
 
-	List<String> getPaternalUnclesOf(String name) throws IdentityException {
+	Set<String> getPaternalUnclesOf(String name) throws IdentityException {
 		String father = nuclearRelationshipService.getFatherOf(name);
-		if(father != null)
+		if (father != null)
 			return nuclearRelationshipService.getBrothersOf(father);
-		return null;
+		return new HashSet<String>();
 	}
 
-	List<String> getPaternalAuntsOf(String name) throws IdentityException {
+	Set<String> getPaternalAuntsOf(String name) throws IdentityException {
 		String father = nuclearRelationshipService.getFatherOf(name);
-		if(father != null)
+		if (father != null)
 			return nuclearRelationshipService.getSistersOf(father);
-		return null;
+		return new HashSet<String>();
 	}
 
-	List<String> getMaternalUnclesOf(String name) throws IdentityException {
+	Set<String> getMaternalUnclesOf(String name) throws IdentityException {
 		String mother = nuclearRelationshipService.getMotherOf(name);
-		if(mother != null)
+		if (mother != null)
 			return nuclearRelationshipService.getBrothersOf(mother);
-		return null;
+		return new HashSet<String>();
 	}
 
-	List<String> getMaternalAuntsOf(String name) throws IdentityException {
+	Set<String> getMaternalAuntsOf(String name) throws IdentityException {
 		String mother = nuclearRelationshipService.getMotherOf(name);
-		if(mother != null)
+		if (mother != null)
 			return nuclearRelationshipService.getSistersOf(mother);
-		return null;
+		return new HashSet<String>();
 	}
 
-	List<String> getSistersInLawOf(String name) throws IdentityException {
+	Set<String> getSistersInLawOf(String name) throws IdentityException {
 		String spouse = nuclearRelationshipService.getSpouseOf(name);
-		List<String> sistersInLaws = new ArrayList<>();
-		if(spouse != null)
-			sistersInLaws = nuclearRelationshipService.getSistersOf(spouse);
+		Set<String> sistersInLaws = new LinkedHashSet<>();
+		try {
+			if (spouse != null)
+				sistersInLaws = nuclearRelationshipService.getSistersOf(spouse);
+		} catch (IdentityException exception) {
+			sistersInLaws = new LinkedHashSet<>();
+		}
 
-		List<String> brothers = nuclearRelationshipService.getBrothersOf(name);
-		for (String brother : brothers)
-			sistersInLaws.add(nuclearRelationshipService.getSpouseOf(brother));
+		Set<String> brothers = nuclearRelationshipService.getBrothersOf(name);
+		String sisterInLaw;
+		for (String brother : brothers) {
+			sisterInLaw = nuclearRelationshipService.getSpouseOf(brother);
+			if (sisterInLaw != null)
+				sistersInLaws.add(sisterInLaw);
+		}
 		return sistersInLaws;
 	}
 
-	List<String> getBrothersInLawOf(String name) throws IdentityException {
+	Set<String> getBrothersInLawOf(String name) throws IdentityException {
 		String spouse = nuclearRelationshipService.getSpouseOf(name);
-		List<String> brothersInLaws = new ArrayList<>();
-		if(spouse != null)
-			brothersInLaws = nuclearRelationshipService.getBrothersOf(spouse);
+		Set<String> brothersInLaws = new LinkedHashSet<>();
+		try {
+			if (spouse != null)
+				brothersInLaws = nuclearRelationshipService.getBrothersOf(spouse);
+		} catch (IdentityException exception) {
+			brothersInLaws = new LinkedHashSet<>();
+		}
 
-		List<String> sisters = nuclearRelationshipService.getSistersOf(name);
-		for (String sister : sisters)
-			brothersInLaws.add(nuclearRelationshipService.getSpouseOf(sister));
+		Set<String> sisters = nuclearRelationshipService.getSistersOf(name);
+		String brotherInLaw;
+		for (String sister : sisters) {
+			brotherInLaw = nuclearRelationshipService.getSpouseOf(sister);
+			if (brotherInLaw != null)
+				brothersInLaws.add(brotherInLaw);
+		}
 		return brothersInLaws;
 	}
 
-	List<String> getSonsOf(String name) throws IdentityException {
-		List<String> sons = new ArrayList<>();
-		List<String> children = nuclearRelationshipService.getChildrenOf(name);
+	Set<String> getSonsOf(String name) throws IdentityException {
+		Set<String> sons = new LinkedHashSet<>();
+		Set<String> children = nuclearRelationshipService.getChildrenOf(name);
 		for (String child : children) {
 			if (nuclearRelationshipService.hasMaleMember(child))
 				sons.add(child);
@@ -76,17 +93,17 @@ class RelationshipService {
 		return sons;
 	}
 
-	List<String> getDaughtersOf(String name) throws IdentityException {
-		List<String> daughters = new ArrayList<>();
-		List<String> children = nuclearRelationshipService.getChildrenOf(name);
+	Set<String> getDaughtersOf(String name) throws IdentityException {
+		Set<String> daughters = new LinkedHashSet<>();
+		Set<String> children = nuclearRelationshipService.getChildrenOf(name);
 		for (String child : children) {
-			if (nuclearRelationshipService.hasMaleMember(child))
+			if (nuclearRelationshipService.hasFemaleMember(child))
 				daughters.add(child);
 		}
 		return daughters;
 	}
 
-	List<String> getSiblingsOf(String name) throws IdentityException {
+	Set<String> getSiblingsOf(String name) throws IdentityException {
 		return nuclearRelationshipService.getSiblingsOf(name);
 	}
 
